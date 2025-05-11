@@ -1,0 +1,70 @@
+import csv
+from collections import defaultdict
+
+def compute_dipeptide_composition(sequence):
+    """
+    Compute the dipeptide composition of a protein sequence.
+    Parameters:
+    sequence (str): A string representation of the protein sequence.
+    Returns:
+    dict: A dictionary with dipeptides as keys and their normalized frequencies as values.
+    """
+
+    # Define the 20 standard amino acids
+    amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+    # Initialize a dictionary to hold dipeptide counts
+    dipeptide_counts = defaultdict(int)
+    # Generate all possible dipeptides
+    dipeptides = [aa1 + aa2 for aa1 in amino_acids for aa2 in amino_acids]
+    # Initialize the count for each dipeptide to zero
+    for dipeptide in dipeptides:
+        dipeptide_counts[dipeptide] = 0
+    # Convert the sequence to uppercase to ensure consistency
+    sequence = sequence.upper()
+    # Iterate over the sequence to count dipeptides
+    for i in range(len(sequence) - 1):
+        dipeptide = sequence[i] + sequence[i + 1]
+        if dipeptide in dipeptide_counts:
+            dipeptide_counts[dipeptide] += 1
+    # Calculate the total number of dipeptides in the sequence
+    total_dipeptides = sum(dipeptide_counts.values())
+    # Normalize the counts to obtain frequencies
+    if total_dipeptides > 0:
+        for dipeptide in dipeptide_counts:
+            dipeptide_counts[dipeptide] /= total_dipeptides
+    else:
+        # Handle sequences shorter than 2 amino acids
+        for dipeptide in dipeptide_counts:
+            dipeptide_counts[dipeptide] = 0.0
+    
+    return dict(dipeptide_counts)
+
+# Main script
+if __name__ == "__main__":
+    # Input and output file names
+    input_filename = "test.txt"
+    output_filename = "dipeptide_composition_test.csv"
+    
+    # Read sequences from the input file
+    with open(input_filename, 'r') as infile:
+        sequences = [line.strip() for line in infile if line.strip()]
+    
+    # Define the 20 standard amino acids
+    amino_acids = 'ACDEFGHIKLMNPQRSTVWY'
+    
+    # Generate all possible dipeptides
+    dipeptides = [aa1 + aa2 for aa1 in amino_acids for aa2 in amino_acids]
+    
+    # Open the output CSV file
+    with open(output_filename, mode='w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        # Write the header row
+        header = ['Sequence'] + dipeptides
+        writer.writerow(header)
+        # Process each sequence
+        for seq in sequences:
+            composition = compute_dipeptide_composition(seq)
+            row = [seq] + [f"{composition[dp]:.6f}" for dp in dipeptides]
+            writer.writerow(row)
+    print(f"Dipeptide compositions have been written to '{output_filename}'.")

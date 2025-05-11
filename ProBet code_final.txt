@@ -1,0 +1,47 @@
+from transformers import BertModel, BertTokenizer
+import torch
+import pandas as pd
+
+# Load ProtBERT
+model_name = "Rostlab/prot_bert"
+tokenizer = BertTokenizer.from_pretrained(model_name, do_lower_case=False)
+model = BertModel.from_pretrained(model_name)
+
+# Read protein sequences from a text file
+with open("test.txt", "r") as file:
+    protein_sequences = file.readlines()
+
+# Remove any extra whitespace or newline characters
+protein_sequences = [seq.strip() for seq in protein_sequences]
+
+# List to store the embeddings for all sequences
+all_embeddings = []
+all_epitopes = []  # To store original sequences for the "Epitope" column
+
+# Process each protein sequence
+for sequence in protein_sequences:
+    original_sequence = sequence  # Save original sequence
+    spaced_sequence = ' '.join(list(sequence))  # Add spaces between amino acids
+
+    # Tokenize the sequence
+    inputs = tokenizer(spaced_sequence, return_tensors="pt")
+    
+    with torch.no_grad():
+        outputs = model(**inputs)
+        embeddings = outputs.last_hidden_state
+
+        # Mean pooling across the sequence
+        mean_embeddings = embeddings.mean(dim=1)
+        embedding_flattened = mean_embeddings.squeeze(0).cpu().numpy()
+
+        all_embeddings.append(embedding_flattened)
+        all_epitopes.append(original_sequence)
+
+# Create DataFrame: first Epitope column, then Feature columns
+embedding_df = pd.DataFrame(all_embeddings, columns=[f'Feature_{i}' for i in range(1, len(embedding_flattened) + 1)])
+embedding_df.insert(0, "Epitope", all_epitopes)  # Insert Epitope at first position
+
+# Save to CSV file
+embedding_df.to_csv("protbert_test.csv", index=False)
+
+print("Mean embeddings with Epitope column (as first column) saved to 'protbert_mean_embeddings_test_with_epitope.csv'")

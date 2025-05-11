@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #fd79a8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--dark) 0%, #1e272e 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            font-weight: 300;
+        }
+
+        .results-container {
+            display: block;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        .results-content {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 2rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(45, 52, 54, 0.6);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-0 {
+            border-top: 4px solid var(--danger);
+        }
+
+        .card-1 {
+            border-top: 4px solid var(--secondary);
+        }
+
+        .card-total {
+            border-top: 4px solid var(--primary);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .card-0 .card-value {
+            color: var(--danger);
+        }
+
+        .card-1 .card-value {
+            color: var(--secondary);
+        }
+
+        .card-total .card-value {
+            color: var(--primary);
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: rgba(45, 52, 54, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table tr:hover {
+            background: rgba(0, 206, 201, 0.1);
+        }
+
+        .class-0 {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .class-1 {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .probability-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .probability-0 {
+            background: var(--danger);
+        }
+
+        .probability-1 {
+            background: var(--secondary);
+        }
+
+        .confidence {
+            font-weight: 600;
+        }
+
+        .high-confidence {
+            color: var(--success);
+        }
+
+        .medium-confidence {
+            color: var(--warning);
+        }
+
+        .low-confidence {
+            color: var(--danger);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .results-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        /* Sequence display styling */
+        .sequence-display {
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <div class="container">
+        <header>
+            <h1>Protein Sequence Analysis Results</h1>
+            <p class="subtitle">Deep Learning Prediction Results</p>
+        </header>
+
+        <div class="results-container">
+            <div class="results-header">
+                <h2 class="results-title">Model Predictions</h2>
+            </div>
+
+            <div class="results-content">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card card-total">
+                        <div class="card-title">Total Sequences</div>
+                        <div class="card-value">{{ results.predictions|length }}</div>
+                    </div>
+                    <div class="card card-0">
+                        <div class="card-title">Epitope Predictions</div>
+                        <div class="card-value">{{ results.class_counts['Epitope'] }}</div>
+                    </div>
+                    <div class="card card-1">
+                        <div class="card-title">Non-Epitope Predictions</div>
+                        <div class="card-value">{{ results.class_counts['Non-Epitope'] }}</div>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Sequence</th>
+                            <th>Predicted Class</th>
+                            <th>Epitope Probability</th>
+                            <th>Non-Epitope Probability</th>
+                            <th>Confidence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pred in results.predictions %}
+                        <tr>
+                            <td class="sequence-display" title="{{ pred.sequence }}">{{ pred.sequence[:30] }}{% if pred.sequence|length > 30 %}...{% endif %}</td>
+                            <td class="class-{{ pred.class }}">{{ pred.class_name }}</td>
+                            <td>
+                                {{ "%.3f"|format(pred.probabilities[0]) }}
+                                <div class="probability-bar">
+                                    <div class="probability-fill probability-0" style="width: {{ pred.probabilities[0] * 100 }}%"></div>
+                                </div>
+                            </td>
+                            <td>
+                                {{ "%.3f"|format(pred.probabilities[1]) }}
+                                <div class="probability-bar">
+                                    <div class="probability-fill probability-1" style="width: {{ pred.probabilities[1] * 100 }}%"></div>
+                                </div>
+                            </td>
+                            <td>
+                                {% set confidence = pred.probabilities[pred.class] * 100 %}
+                                {% if confidence > 70 %}
+                                    <span class="confidence high-confidence">High ({{ "%.1f"|format(confidence) }}%)</span>
+                                {% elif confidence > 50 %}
+                                    <span class="confidence medium-confidence">Medium ({{ "%.1f"|format(confidence) }}%)</span>
+                                {% else %}
+                                    <span class="confidence low-confidence">Low ({{ "%.1f"|format(confidence) }}%)</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="window.location.href='/'" class="btn btn-secondary">
+                <i class="fas fa-redo"></i> New Analysis
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: "#6c5ce7"
+                    },
+                    shape: {
+                        type: "circle",
+                        stroke: {
+                            width: 0,
+                            color: "#000000"
+                        },
+                        polygon: {
+                            nb_sides: 5
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: false,
+                        anim: {
+                            enable: false,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 40,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#6c5ce7",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: false,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        bubble: {
+                            distance: 400,
+                            size: 40,
+                            duration: 2,
+                            opacity: 8,
+                            speed: 3
+                        },
+                        repulse: {
+                            distance: 200,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+
+            // Initialize tilt.js
+            $('.card').tilt({
+                scale: 1.03,
+                glare: true,
+                maxGlare: 0.1
+            });
+
+            // Export functionality
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                // Convert table to CSV
+                let csv = [];
+                let headers = [];
+                document.querySelectorAll(".results-table th").forEach(function(th) {
+                    headers.push(th.textContent);
+                });
+                csv.push(headers.join(","));
+
+                document.querySelectorAll(".results-table tr").forEach(function(tr) {
+                    let row = [];
+                    tr.querySelectorAll("td").forEach(function(td) {
+                        // Get text without the probability bars
+                        let text = td.textContent.split('\n')[0].trim();
+                        row.push('"' + text + '"');
+                    });
+                    if (row.length > 0) {
+                        csv.push(row.join(","));
+                    }
+                });
+
+                // Download CSV file
+                let csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+                let encodedUri = encodeURI(csvContent);
+                let link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "prediction_results.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
+</body>
+</html>

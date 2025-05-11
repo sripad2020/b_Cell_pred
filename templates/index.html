@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Protein Sequence Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tilt.js/1.2.1/tilt.jquery.min.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --accent: #fd79a8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            touch-action: manipulation;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--dark) 0%, #1e272e 100%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin-bottom: 0.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: var(--secondary);
+            font-weight: 300;
+        }
+
+        .analysis-box {
+            background: rgba(45, 52, 54, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .analysis-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+
+        textarea, select, input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.1);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+
+        textarea:focus, select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+        }
+
+        select option {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--light);
+            padding: 10px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .btn {
+                width: auto;
+            }
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        @media (min-width: 768px) {
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 7px 20px rgba(108, 92, 231, 0.4);
+            }
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .results-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (min-width: 576px) {
+            .results-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .results-title {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: var(--secondary);
+        }
+
+        .results-content {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(45, 52, 54, 0.6);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .card-title {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .tree-container {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 767px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .analysis-box {
+                padding: 1.2rem;
+            }
+
+            .tree-container {
+                height: 250px;
+            }
+
+            /* Disable tilt effect on mobile */
+            .analysis-box[data-tilt] {
+                transform: none !important;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            .container {
+                padding: 0.8rem;
+            }
+
+            textarea {
+                min-height: 100px;
+            }
+
+            .btn {
+                padding: 0.7rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <div class="container">
+        <header>
+            <h1>Protein Sequence Analyzer</h1>
+            <p class="subtitle">Analyze protein sequences with advanced bioinformatics tools</p>
+        </header>
+
+        <div class="analysis-box" data-tilt>
+            <form id="proteinForm" action="/analyze" method="POST">
+                <div class="form-group">
+                    <label for="proteinSequence">Protein Sequence</label>
+                    <textarea id="proteinSequence" name="proteinSequence" placeholder="Enter protein sequence (e.g., MGLSDGEWQLVL...)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="analysisType">Analysis Type</label>
+                    <select id="analysisType" name="analysisType">
+                        <option value="">Select analysis type...</option>
+                        <option value="atomic_features">Atomic Features Prediction</option>
+                        <option value="ESM_prediction">ESM prediction</option>
+                        <option value="ProBet">Pro Bet</option>
+                        <option value="aa_percentage">AA Percentage</option>
+                        <option value="physiochemical">Physio chemical properties</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sequenceLength">Sequence Length (8-25)</label>
+                    <input type="number" id="sequenceLength" name="sequenceLength" min="8" max="25" placeholder="Enter a number between 8 and 25">
+                </div>
+
+                <button type="submit" class="btn">Analyze Sequence</button>
+            </form>
+        </div>
+
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Analyzing protein sequence...</p>
+        </div>
+
+        <div class="results-container">
+            <div class="results-header">
+                <h2 class="results-title">Analysis Results</h2>
+                <button id="exportBtn" class="btn">Export Results</button>
+            </div>
+
+            <div class="results-content">
+                <div id="textResults">
+                    <!-- Text results will appear here -->
+                </div>
+
+                <div class="tree-container" id="treeVisualization">
+                    <!-- Tree visualization will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Initialize particles.js with mobile-friendly settings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reduce particles on mobile for better performance
+            const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
+            particlesJS('particles-js', {
+                "particles": {
+                    "number": {
+                        "value": isMobile ? 40 : 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": isMobile ? 600 : 800
+                        }
+                    },
+                    "color": {
+                        "value": "#00cec9"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": false,
+                        "anim": {
+                            "enable": false
+                        }
+                    },
+                    "size": {
+                        "value": isMobile ? 2 : 3,
+                        "random": true,
+                        "anim": {
+                            "enable": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": !isMobile,
+                        "distance": 150,
+                        "color": "#6c5ce7",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": isMobile ? 1 : 2,
+                        "direction": "none",
+                        "random": false,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": !isMobile,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 1
+                            }
+                        },
+                        "push": {
+                            "particles_nb": isMobile ? 2 : 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+
+            // Initialize tilt.js only on desktop
+            if (!isMobile) {
+                $('.analysis-box').tilt({
+                    scale: 1.02,
+                    glare: true,
+                    maxGlare: 0.2,
+                    disableAxis: 'y' // Only tilt on x-axis for better mobile behavior
+                });
+            }
+
+            // Export button functionality
+            document.getElementById('exportBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('Export functionality would be implemented here');
+            });
+
+            // Form validation for sequence length
+            document.getElementById('proteinForm').addEventListener('submit', function(e) {
+                const lengthInput = document.getElementById('sequenceLength');
+                if (lengthInput.value) {
+                    const value = parseInt(lengthInput.value);
+                    if (isNaN(value) || value < 8 || value > 25) {
+                        alert('Please enter a number between 8 and 25');
+                        e.preventDefault();
+                        lengthInput.focus();
+                        return false;
+                    }
+                }
+
+                // Show loading indicator
+                document.querySelector('.loading').style.display = 'block';
+                document.querySelector('.results-container').style.display = 'none';
+            });
+
+            // Better touch feedback for buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.classList.add('active');
+                });
+
+                button.addEventListener('touchend', function() {
+                    this.classList.remove('active');
+                });
+            });
+
+            // Prevent zooming on input focus on mobile
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                    document.body.style.zoom = "100%";
+                }
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>

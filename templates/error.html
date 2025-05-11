@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Paste the relevant parts of your CSS here */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #2d3436;
+            color: #f5f6fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .error-box {
+            background: rgba(45, 52, 54, 0.8);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            color: #fd79a8;
+        }
+        .btn {
+            background: linear-gradient(135deg, #6c5ce7 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-box">
+        <h1>Error Processing Request</h1>
+        <p>{{ error }}</p>
+        <a href="/" class="btn">Return to Analyzer</a>
+    </div>
+</body>
+</html>
